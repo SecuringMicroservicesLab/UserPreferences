@@ -4,6 +4,8 @@
 #include <grpcpp/grpcpp.h>
 #include "../services.grpc.pb.h"
 
+#include "../include/laserpants/dotenv/dotenv.h"
+
 using namespace grpc;
 using namespace secure_lab;
 
@@ -62,20 +64,20 @@ public:
 
 int main()
 {
+  dotenv::init();
+
   PreferencesServiceImpl service;
   ServerBuilder builder;
 
-  // Listen on port 50052
-  // It must be different from the Validator (50051) and Orchestrator (50050)
-  // when we get the addresses from gcp we will put them here
-  std::string server_address("0.0.0.0:50052");
+  // Fallback to 0.0.0.0:50052 if not found
+  std::string server_address = dotenv::getenv("PREFERENCES_ADDRESS", "0.0.0.0:50052");
+  
   builder.AddListeningPort(server_address, InsecureServerCredentials());
   builder.RegisterService(&service);
 
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "[Preferences] Server listening on " << server_address << std::endl;
 
-  // Keep the server running indefinitely
   server->Wait();
   return 0;
 }

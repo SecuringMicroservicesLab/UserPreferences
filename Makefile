@@ -7,7 +7,7 @@ SRCS = src/main.cpp services.pb.cc services.grpc.pb.cc
 OBJS = $(SRCS:.cpp=.o)
 
 server_preferences: $(SRCS)
-	g++ $(CXXFLAGS) $(SRCS) $(LDFLAGS) -o server_preferences
+	g++ $(CXXFLAGS) $(SRCS) $(LDFLAGS) -o server_preferences -I include/laserpants/dotenv
 
 clean:
 	rm -f server_preferences
